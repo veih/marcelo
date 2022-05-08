@@ -1,4 +1,6 @@
+let cart = [];
 let modalQt = 1;
+let modalKey = 0;
 
 // ajudadores para ocultar e mostrar elementos
 
@@ -20,6 +22,7 @@ pizzaJson.map((pizza, index) => {
         let key = e.target.closest('.pizza-item').getAttribute('data-key');
         //modal
         modalQt = 1;
+        modalKey = key;
 
         card('.pizzaBig img').src = pizzaJson[key].img;
         card('.pizzaInfo h1').innerHTML = pizzaJson[key].name;
@@ -53,9 +56,32 @@ const closeModal = () => {
     card('.pizzaWindowArea').style.opacity = 0;
     setTimeout(() => {
         card('.pizzaWindowArea').style.display = 'none';
-    }, 500);  
+    }, 500);
 }
 
 cards('.pizzaInfo--cancelButton, .pizzaInfo--cancelMobileButton').forEach((pizza) => {
     pizza.addEventListener('click', closeModal);
+});
+
+card('.pizzaInfo--qtmenos').addEventListener('click', () => {
+    if (modalQt > 1) {
+        modalQt--;
+        card('.pizzaInfo--qt').innerHTML = modalQt;
+    }
+});
+
+card('.pizzaInfo--qtmais').addEventListener('click', () => {
+        modalQt++;
+        card('.pizzaInfo--qt').innerHTML = modalQt;
+
+});
+
+card('.pizzaInfo--addButton').addEventListener('click', () => {
+    let size = parseInt(card('.pizzaInfo--size.selected').getAttribute('data-key'));
+    cart.push({
+        id: pizzaJson[modalKey].id,
+        size: size,
+        qt: modalQt,
+    });
+    closeModal();
 });
