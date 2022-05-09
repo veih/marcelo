@@ -62,7 +62,7 @@ const closeModal = () => {
 cards('.pizzaInfo--cancelButton, .pizzaInfo--cancelMobileButton').forEach((pizza) => {
     pizza.addEventListener('click', closeModal);
 });
-
+//adicionando a pizza ao carrinho
 card('.pizzaInfo--qtmenos').addEventListener('click', () => {
     if (modalQt > 1) {
         modalQt--;
@@ -78,10 +78,39 @@ card('.pizzaInfo--qtmais').addEventListener('click', () => {
 
 card('.pizzaInfo--addButton').addEventListener('click', () => {
     let size = parseInt(card('.pizzaInfo--size.selected').getAttribute('data-key'));
+
+    let indentifier = pizzaJson[modalKey].id+'@'+size;
+
+    let key = cart.findIndex((item) => item.identifier == indentifier);
+
+    if (key > -1) {
+        cart[key].qt += modalQt;
+    }
+    else {
     cart.push({
+        id: indentifier,
         id: pizzaJson[modalKey].id,
         size: size,
         qt: modalQt,
     });
+}
+    upDateCart();
     closeModal();
 });
+//atualizando o carrinho
+function upDateCart() {
+    if (cart.length > 0) {
+        card('aside').classList.add('show');
+        card('.cart').innerHTML ='';
+
+        for (let i  in cart) {
+            let pizzaItem = pizzaJson.find((item) => item.id == cart[i].id);
+            let cartItem = card('.models .cart--item').cloneNode(true);
+
+            cartItem.querySelector('img').src = pizzaItem.img;
+            card('.cart').append(cartItem);
+        }
+    } else {
+        card('aside').classList.remove('show');
+    }
+}
