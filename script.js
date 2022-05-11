@@ -62,6 +62,7 @@ const closeModal = () => {
 cards('.pizzaInfo--cancelButton, .pizzaInfo--cancelMobileButton').forEach((pizza) => {
     pizza.addEventListener('click', closeModal);
 });
+
 //adicionando a pizza ao carrinho
 card('.pizzaInfo--qtmenos').addEventListener('click', () => {
     if (modalQt > 1) {
@@ -71,45 +72,68 @@ card('.pizzaInfo--qtmenos').addEventListener('click', () => {
 });
 
 card('.pizzaInfo--qtmais').addEventListener('click', () => {
-        modalQt++;
-        card('.pizzaInfo--qt').innerHTML = modalQt;
+    modalQt++;
+    card('.pizzaInfo--qt').innerHTML = modalQt;
 
+});
+
+cards('.pizzaInfo--size').forEach((size, sizeIndex) => {
+    size.addEventListener('click', (e) => {
+        card('.pizzaInfo--size.selected').classList.remove('selected');
+        size.classList.add('selected');
+    });
 });
 
 card('.pizzaInfo--addButton').addEventListener('click', () => {
     let size = parseInt(card('.pizzaInfo--size.selected').getAttribute('data-key'));
-
-    let indentifier = pizzaJson[modalKey].id+'@'+size;
-
+    let indentifier = pizzaJson[modalKey].id + '@' + size;
     let key = cart.findIndex((item) => item.identifier == indentifier);
 
     if (key > -1) {
         cart[key].qt += modalQt;
+    } else {
+        cart.push({
+            indentifier,
+            id: pizzaJson[modalKey].id,
+            size: size,
+            qt: modalQt
+        });
     }
-    else {
-    cart.push({
-        id: indentifier,
-        id: pizzaJson[modalKey].id,
-        size: size,
-        qt: modalQt,
-    });
-}
-    upDateCart();
     closeModal();
+    upDateCart();
 });
 //atualizando o carrinho
 function upDateCart() {
     if (cart.length > 0) {
         card('aside').classList.add('show');
-        card('.cart').innerHTML ='';
+        card('.cart').innerHTML = '';
 
-        for (let i  in cart) {
+        for (let i in cart) {
             let pizzaItem = pizzaJson.find((item) => item.id == cart[i].id);
             let cartItem = card('.models .cart--item').cloneNode(true);
 
+            let pizzaSizeName;
+            switch (cart[i].size) {
+                case 0:
+                    pizzaSizeName = 'P';
+                    break;
+                case 1:
+                    pizzaSizeName = 'M';
+                    break;
+                case 2:
+                    pizzaSizeName = 'G';
+                    break;
+            }
+
+            let pizzaName = `${pizzaItem.name} (${pizzaSizeName})`;
+
             cartItem.querySelector('img').src = pizzaItem.img;
+            cartItem.querySelector('.cart--item-nome').innerHTML = pizzaName;
+            cartItem.querySelector('.cart--item--qt').innerHTML = cart[i].qt;
+
             card('.cart').append(cartItem);
         }
+
     } else {
         card('aside').classList.remove('show');
     }
